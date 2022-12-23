@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import $ from "jquery";
 
+import {Link} from 'react-router-dom';
+ 
 export class Login extends Component {
   componentDidMount() {
     $(".needs-validation").submit(function(event) {
@@ -112,28 +114,11 @@ export class Login extends Component {
                         </button>
                       </div>
                     </form>
-                    <div className="text-center mt-4 mb-3">
-                      <div className="text-job text-muted">
-                        Login With Social
-                      </div>
-                    </div>
-                    <div className="row sm-gutters">
-                      <div className="col-6">
-                        <a className="btn btn-block btn-social btn-facebook">
-                          <span className="fab fa-facebook"></span> Facebook
-                        </a>
-                      </div>
-                      <div className="col-6">
-                        <a className="btn btn-block btn-social btn-twitter">
-                          <span className="fab fa-twitter"></span> Twitter
-                        </a>
-                      </div>
-                    </div>
                   </div>
                 </div>
-                <div className="mt-5 text-muted text-center">
+                <div className="mt-2 text-muted text-center">
                   Don't have an account?{" "}
-                  <a href="auth-register.html">Create One</a>
+                  <Link to="/auth/register" > Create one </Link> 
                 </div>
                 <div className="simple-footer">
                   Copyright &copy; Rains 2018

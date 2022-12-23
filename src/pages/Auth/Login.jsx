@@ -112,23 +112,6 @@ export class Login extends Component {
                         </button>
                       </div>
                     </form>
-                    <div className="text-center mt-4 mb-3">
-                      <div className="text-job text-muted">
-                        Login With Social
-                      </div>
-                    </div>
-                    <div className="row sm-gutters">
-                      <div className="col-6">
-                        <a className="btn btn-block btn-social btn-facebook">
-                          <span className="fab fa-facebook"></span> Facebook
-                        </a>
-                      </div>
-                      <div className="col-6">
-                        <a className="btn btn-block btn-social btn-twitter">
-                          <span className="fab fa-twitter"></span> Twitter
-                        </a>
-                      </div>
-                    </div>
                   </div>
                 </div>
                 <div className="mt-5 text-muted text-center">

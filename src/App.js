@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Switch, Route, Link } from "react-router-dom";
 import { Header, Footer, Sidebar } from "./components/admin";
 
@@ -31,6 +31,7 @@ import { useLocation } from "react-router-dom";
 // import PostCreate from "./pages/Pages/Features/PostCreate";
 // import Posts from "./pages/Pages/Features/Posts";
 
+import AuthService from "./services/auth.service";
 
 import EcommerceDashboard from "./pages/Dashboard/EcommerceDashboard";
 import GeneralDashboard from "./pages/Dashboard/GeneralDashboard";
@@ -79,12 +80,13 @@ import Simple from "./pages/Google Maps/Simple";
 import FormValidation from "./pages/Forms/FormValidation";
 import FormEditor from "./pages/Forms/FormEditor";
 import FormAdvancedform from "./pages/Forms/FormAdvancedform";
-import ForgotPassword from "./pages/Pages/Auth/ForgotPassword";
-import Login from "./pages/Pages/Auth/Login";
-import Register from "./pages/Pages/Auth/Register";
-import ResetPassword from "./pages/Pages/Auth/ResetPassword";
+import ForgotPassword from "./pages/Auth/ForgotPassword";
+import Login from "./pages/Auth/Login";
+import Register from "./pages/Auth/Register";
+import ResetPassword from "./pages/Auth/ResetPassword";
 import Credit from "./pages/Pages/Credits";
 
+import EventBus from "./common/EventBus";
 
 // const Posts = React.lazy(() => import('./pages/Pages/Features/Posts'));
 // const Posts = React.lazy(() => import('./pages/Pages/Features/Posts'));
@@ -132,53 +134,86 @@ const history = React.lazy(() => import('./history'));
 
 
 
-function App() {
+const App = () => {
+
+  const [showModeratorBoard, setShowModeratorBoard] = useState(false);
+  const [showAdminBoard, setShowAdminBoard] = useState(false);
+  const [currentUser, setCurrentUser] = useState(undefined);
+
   let location = useLocation().pathname;
 
   let locationSplit = location.split("/");
   let locationParent = locationSplit[1];
   let WithoutRouter = ["auth", "error", "utilities"];
 
-  // const RenderDataFullScreen = () => {
-  //   if (location === "/auth/forget-password") {
-  //     return <ForgotPassword />;
-  //   } else if (location === "/auth/register") {
-  //     return <Register />;
-  //   } else if (location === "/auth/reset-password") {
-  //     return <ResetPassword />;
-  //   } else if (location === "/error/503") {
-  //     return <Error503 />;
-  //   } else if (location === "/error/403") {
-  //     return <Error403 />;
-  //   } else if (location === "/error/404") {
-  //     return <Error404 />;
-  //   } else if (location === "/error/500") {
-  //     return <Error500 />;
-  //   } else if (location === "/utilities/subscribe") {
-  //     return <Subscribe />;
-  //   } else if (location === "/utilities/contact") {
-  //     return <Contact />;
-  //   }
-  // };
+  useEffect(() => {
+    window.process = {
+      ...window.process,
+    };
+    const user = AuthService.getCurrentUser();
+
+    if (user) {
+      setCurrentUser(user);
+      setShowModeratorBoard(user.roles.includes("ROLE_MODERATOR"));
+      setShowAdminBoard(user.roles.includes("ROLE_ADMIN"));
+    }
+
+    EventBus.on("logout", () => {
+      logOut();
+    });
+
+    return () => {
+      EventBus.remove("logout");
+    };
+  }, []);
+
+  const logOut = () => {
+    AuthService.logout();
+    setShowModeratorBoard(false);
+    setShowAdminBoard(false);
+    setCurrentUser(undefined);
+  };
+
+  const RenderDataFullScreen = () => {
+    if (location === "/auth/forget-password") {
+      return <ForgotPassword />;
+    } else if (location === "/auth/register") {
+      return <Register />;
+    } else if (location === "/auth/reset-password") {
+      return <ResetPassword />;
+    } else if (location === "/error/503") {
+      return <Error503 />;
+    } else if (location === "/error/403") {
+      return <Error403 />;
+    } else if (location === "/error/404") {
+      return <Error404 />;
+    } else if (location === "/error/500") {
+      return <Error500 />;
+    } else if (location === "/utilities/subscribe") {
+      return <Subscribe />;
+    } else if (location === "/utilities/contact") {
+      return <Contact />;
+    }
+  };
 
   return (
     <div className="App">
-      <Login/>
+      {/* <Login/> */}
       <>
         
-        {/* {!WithoutRouter.includes(locationParent) ? (
+        {!WithoutRouter.includes(locationParent) ? (
           <>
-            <Header />
-            <Sidebar />
+            {/* <Header /> */}
+            {/* <Sidebar /> */}
           </>
         ) : (
           ""
         )}
         <React.Suspense fallback={<h1>Still Loading…</h1>}>
         <Switch history={history}>
-          <Route path="/" exact component={EcommerceDashboard} />
-          <Route path="/dashboard/general" component={GeneralDashboard} />
-          <Route path="/layout/default" component={DefaultLayoutPage} />
+          <Route path="/" component={Login} />
+          <Route path="/dashboard/general"  component={GeneralDashboard} />
+          <Route path="/layout/default" exact component={DefaultLayoutPage} />
           <Route
             path="/layout/transparent-sidebar"
             component={TransparentSidebar}
@@ -271,7 +306,7 @@ function App() {
           <Route path="/utilities/contact" component={Contact} />
         </Switch>
         </React.Suspense>
-        <Footer /> */}
+        <Footer />
       </>
     </div>
   );
